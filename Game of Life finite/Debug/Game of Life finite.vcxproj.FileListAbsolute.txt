@@ -1,0 +1,2 @@
+E:\John\Documents\GitHub\Game-of-Life\Game of Life finite\Debug\Game of Life finite.exe
+E:\John\Documents\GitHub\Game-of-Life\Game of Life finite\Debug\Game of Life finite.pdb
