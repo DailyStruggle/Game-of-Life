@@ -10,16 +10,19 @@ enum eDirs {
     north = 0,
     east = 1,
     south = 2,
-    west = 3
+    west = 3,
+    northeast = 4,
+    northwest = 5,
+    southeast = 6,
+    southwest = 7,
 };
-
 
 struct Node {
     int x;
     int y;
     bool val = false;
     bool val2 = false;
-    Node* dir[4];
+    Node* dir[8];
 };
 
 
@@ -59,6 +62,15 @@ void initList(std::vector<std::vector<Node>>& List) {
             }
         }
     }
+
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            List[i][j].dir[northeast] = List[i][j].dir[north]->dir[east];
+            List[i][j].dir[northwest] = List[i][j].dir[north]->dir[west];
+            List[i][j].dir[southeast] = List[i][j].dir[south]->dir[east];
+            List[i][j].dir[southwest] = List[i][j].dir[south]->dir[west];
+        }
+    }
 }
 
 void Tick(std::vector<std::vector<Node>>& List, bool swapState) {
@@ -70,47 +82,37 @@ void Tick(std::vector<std::vector<Node>>& List, bool swapState) {
             Node* node = &List[i][j];
             int vals = 0;
             if (swapState) {
-                vals += (*(node->dir[north])).val2;
-                vals += (*(node->dir[east])).val2;
-                vals += (*(node->dir[south])).val2;
-                vals += (*(node->dir[west])).val2;
-                vals += (*(node->dir[north]->dir[east])).val2;
-                vals += (*(node->dir[north]->dir[west])).val2;
-                vals += (*(node->dir[south]->dir[east])).val2;
-                vals += (*(node->dir[south]->dir[west])).val2;
+                for (int i = 0; i < 8; i++) {
+                    vals += node->dir[i]->val2;
+                }
 
                 switch (vals) {
-                case 2:
-                    node->val = node->val2;
-                    break;
-                case 3:
-                    node->val = true;
-                    break;
-                default:
-                    node->val = false;
-                    break;
+                    case 2:
+                        node->val = node->val2;
+                        break;
+                    case 3:
+                        node->val = true;
+                        break;
+                    default:
+                        node->val = false;
+                        break;
                 }
             }
             else {
-                vals += (*(node->dir[north])).val;
-                vals += (*(node->dir[east])).val;
-                vals += (*(node->dir[south])).val;
-                vals += (*(node->dir[west])).val;
-                vals += (*(node->dir[north]->dir[east])).val;
-                vals += (*(node->dir[north]->dir[west])).val;
-                vals += (*(node->dir[south]->dir[east])).val;
-                vals += (*(node->dir[south]->dir[west])).val;
+                for (int i = 0; i < 8; i++) {
+                    vals += node->dir[i]->val;
+                }
 
                 switch (vals) {
-                case 2:
-                    node->val2 = node->val;
-                    break;
-                case 3:
-                    node->val2 = true;
-                    break;
-                default:
-                    node->val2 = false;
-                    break;
+                    case 2:
+                        node->val2 = node->val;
+                        break;
+                    case 3:
+                        node->val2 = true;
+                        break;
+                    default:
+                        node->val2 = false;
+                        break;
                 }
             }
         }
@@ -127,7 +129,12 @@ int main()
         std::ofstream inFileSet("input.txt");
         if (inFileSet.is_open()) {
             for (int i = 0; i < 5; i++) {
-                inFileSet << "000000\n";
+                std::string line = "";
+                for (int j = 0; j < c; j++) {
+                    line += "0";
+                }
+                line += "\n";
+                inFileSet << line;
             }
         }
         inFileSet.close();
@@ -158,17 +165,6 @@ int main()
     for (int i = 0; i < ticks; i++) {
         Tick(List, swapState);
         swapState = !swapState;
-
-        /*
-        for (int i = 0; i < r; i++) {
-            std::cout << "\n";
-            for (int j = 0; j < c; j++) {
-                if(swapState) std::cout << List[i][j].val2;
-                else          std::cout << List[i][j].val;
-            }
-        }
-        std::cout << "\n\n";
-        */
     }
 
     if (swapState) {
@@ -196,15 +192,3 @@ int main()
         outFile.close();
     }
 }
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
