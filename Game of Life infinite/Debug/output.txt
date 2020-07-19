@@ -1,0 +1,4 @@
+output shifted by: 6, 8
+101
+011
+010
